@@ -1,0 +1,50 @@
+import 'package:get_it/get_it.dart';
+import 'core/services/psiphon_setup_service.dart';
+import 'features/psiphon/data/datasources/psiphon_local_datasource.dart';
+import 'features/psiphon/data/repositories/psiphon_repository_impl.dart';
+import 'features/psiphon/domain/repositories/psiphon_repository.dart';
+import 'features/psiphon/domain/usecases/get_status_stream.dart';
+import 'features/psiphon/domain/usecases/start_psiphon.dart';
+import 'features/psiphon/domain/usecases/stop_psiphon.dart';
+import 'features/psiphon/presentation/bloc/psiphon_bloc.dart';
+
+// Create a global instance of GetIt
+final sl = GetIt.instance;
+
+Future<void> init(PsiphonPaths paths) async {
+  // --- Features - Psiphon ---
+
+  // BLoC
+  // We register it as a factory because we might want to create a new instance
+  // of the BLoC in different parts of the app (though not in this simple case).
+  sl.registerFactory(
+        () => PsiphonBloc(
+      startPsiphon: sl(),
+      stopPsiphon: sl(),
+      getStatusStream: sl(),
+      psiphonPaths: sl(), // The paths object is registered below
+    ),
+  );
+
+  // Use Cases
+  // They are simple classes, so we register them as lazy singletons.
+  sl.registerLazySingleton(() => StartPsiphon(sl()));
+  sl.registerLazySingleton(() => StopPsiphon(sl()));
+  sl.registerLazySingleton(() => GetStatusStream(sl()));
+
+  // Repository
+  sl.registerLazySingleton<PsiphonRepository>(
+        () => PsiphonRepositoryImpl(localDataSource: sl()),
+  );
+
+  // Data Sources
+  sl.registerLazySingleton<PsiphonLocalDataSource>(
+        () => PsiphonLocalDataSourceImpl(),
+  );
+
+  // --- Core ---
+
+  // Register the PsiphonPaths object that we got from the setup service.
+  // This makes it available for the BLoC.
+  sl.registerSingleton<PsiphonPaths>(paths);
+}
