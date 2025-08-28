@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'core/services/psiphon_config_service.dart';
 import 'core/services/psiphon_setup_service.dart';
 import 'features/psiphon/data/datasources/psiphon_local_datasource.dart';
 import 'features/psiphon/data/repositories/psiphon_repository_impl.dart';
@@ -22,7 +23,8 @@ Future<void> init(PsiphonPaths paths) async {
       startPsiphon: sl(),
       stopPsiphon: sl(),
       getStatusStream: sl(),
-      psiphonPaths: sl(), // The paths object is registered below
+      psiphonPaths: sl(),
+      configService: sl(),
     ),
   );
 
@@ -44,7 +46,6 @@ Future<void> init(PsiphonPaths paths) async {
 
   // --- Core ---
 
-  // Register the PsiphonPaths object that we got from the setup service.
-  // This makes it available for the BLoC.
   sl.registerSingleton<PsiphonPaths>(paths);
+  sl.registerLazySingleton(() => PsiphonConfigService());
 }

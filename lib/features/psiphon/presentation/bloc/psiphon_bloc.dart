@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import '../../../../core/services/psiphon_config_service.dart';
 import '../../../../core/services/psiphon_setup_service.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../../domain/entities/connection_status.dart';
@@ -16,7 +17,8 @@ class PsiphonBloc extends Bloc<PsiphonEvent, PsiphonState> {
   final StartPsiphon startPsiphon;
   final StopPsiphon stopPsiphon;
   final GetStatusStream getStatusStream;
-  final PsiphonPaths psiphonPaths; // Paths from the initial setup
+  final PsiphonPaths psiphonPaths;
+  final PsiphonConfigService configService; // <-- Inject the new service
 
   StreamSubscription<ConnectionStatus>? _statusSubscription;
 
@@ -25,40 +27,71 @@ class PsiphonBloc extends Bloc<PsiphonEvent, PsiphonState> {
     required this.stopPsiphon,
     required this.getStatusStream,
     required this.psiphonPaths,
+    required this.configService,
   }) : super(const PsiphonState()) {
-    // Register event handlers
+    on<PsiphonBlocInitialized>(_onInitialize);
     on<StartPsiphonConnection>(_onStartConnection);
     on<StopPsiphonConnection>(_onStopConnection);
+    on<SelectRegion>(_onSelectRegion);
     on<_PsiphonStatusUpdated>(_onStatusUpdated);
 
-    // Start listening to the status stream immediately
+
+    // Trigger the initialization event right after the BLoC is created.
+    add(PsiphonBlocInitialized());
+  }
+
+  Future<void> _onInitialize(
+      PsiphonBlocInitialized event, Emitter<PsiphonState> emit) async {
+    // Read initial region from config and emit the state.
+    // This is now a valid use of 'emit'.
+    final initialRegion = await configService.readEgressRegion(psiphonPaths.configPath);
+    if (initialRegion != null) {
+      emit(state.copyWith(status: state.status.copyWith(selectedEgressRegion: initialRegion)));
+    }
+
+    // Start listening to the status stream.
     _statusSubscription = getStatusStream().listen((status) {
-      // Add an internal event to update the state
       add(_PsiphonStatusUpdated(status));
     });
   }
 
   Future<void> _onStartConnection(
-      StartPsiphonConnection event,
-      Emitter<PsiphonState> emit,
-      ) async {
-    // We don't need to emit a 'loading' state here because the
-    // status stream will automatically report the 'connecting' state.
+      StartPsiphonConnection event, Emitter<PsiphonState> emit) async {
     await startPsiphon(StartPsiphonParams(paths: psiphonPaths));
   }
 
   Future<void> _onStopConnection(
-      StopPsiphonConnection event,
-      Emitter<PsiphonState> emit,
-      ) async {
+      StopPsiphonConnection event, Emitter<PsiphonState> emit) async {
     await stopPsiphon(NoParams());
   }
 
+  Future<void> _onSelectRegion(
+      SelectRegion event, Emitter<PsiphonState> emit) async {
+    // 1. Stop the current connection if it's running
+    if (state.status.state != ConnectionState.disconnected &&
+        state.status.state != ConnectionState.stopping) {
+      await stopPsiphon(NoParams());
+    }
+
+    // 2. Update the config file with the new region
+    await configService.updateEgressRegion(psiphonPaths.configPath, event.regionCode);
+
+    // 3. Update the state with the newly selected region
+    emit(state.copyWith(
+      status: state.status.copyWith(selectedEgressRegion: event.regionCode),
+    ));
+
+    // 4. Automatically reconnect
+    add(StartPsiphonConnection());
+  }
+
   void _onStatusUpdated(
-      _PsiphonStatusUpdated event,
-      Emitter<PsiphonState> emit,
-      ) {
-    emit(state.copyWith(status: event.status));
+      _PsiphonStatusUpdated event, Emitter<PsiphonState> emit) {
+    // Preserve the selected region when status updates come from the stream
+    emit(state.copyWith(
+        status: event.status.copyWith(
+          selectedEgressRegion: state.status.selectedEgressRegion,
+        )));
   }
 
   @override

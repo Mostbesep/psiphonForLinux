@@ -82,7 +82,10 @@ class PsiphonRepositoryImpl implements PsiphonRepository {
       return lastStatus.copyWith(socksProxyPort: notice.port);
     }
     if (notice is AvailableEgressRegionsNotice) {
-      return lastStatus.copyWith(availableRegions: notice.regions);
+      // return lastStatus.copyWith(availableRegions: notice.regions);
+      if (notice.regions.isNotEmpty) {
+        return lastStatus.copyWith(availableRegions: notice.regions);
+      }
     }
     if (notice is ClientRegionNotice) {
       return lastStatus.copyWith(clientRegion: notice.region);
@@ -108,7 +111,12 @@ class PsiphonRepositoryImpl implements PsiphonRepository {
     }
     if (notice is ExitingNotice) {
       // Reset to a clean disconnected state
-      return const ConnectionStatus(state: ConnectionState.disconnected);
+      // Reset status but keep the region list and selection
+      return ConnectionStatus(
+        state: ConnectionState.disconnected,
+        availableRegions: lastStatus.availableRegions,
+        selectedEgressRegion: lastStatus.selectedEgressRegion,
+      );
     }
     // Return last status if the notice is not handled
     return lastStatus;
