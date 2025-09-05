@@ -18,7 +18,7 @@ class PsiphonBloc extends Bloc<PsiphonEvent, PsiphonState> {
   final StopPsiphon stopPsiphon;
   final GetStatusStream getStatusStream;
   final PsiphonPaths psiphonPaths;
-  final PsiphonConfigService configService; // <-- Inject the new service
+  final PsiphonConfigService configService;
 
   StreamSubscription<ConnectionStatus>? _statusSubscription;
 
@@ -57,11 +57,13 @@ class PsiphonBloc extends Bloc<PsiphonEvent, PsiphonState> {
 
   Future<void> _onStartConnection(
       StartPsiphonConnection event, Emitter<PsiphonState> emit) async {
+    emit(state.copyWith(serviceIsRunning: true));
     await startPsiphon(StartPsiphonParams(paths: psiphonPaths));
   }
 
   Future<void> _onStopConnection(
       StopPsiphonConnection event, Emitter<PsiphonState> emit) async {
+    emit(state.copyWith(serviceIsRunning: false));
     await stopPsiphon(NoParams());
   }
 
@@ -85,8 +87,7 @@ class PsiphonBloc extends Bloc<PsiphonEvent, PsiphonState> {
     add(StartPsiphonConnection());
   }
 
-  void _onStatusUpdated(
-      _PsiphonStatusUpdated event, Emitter<PsiphonState> emit) {
+  void _onStatusUpdated(_PsiphonStatusUpdated event, Emitter<PsiphonState> emit) {
     // Preserve the selected region when status updates come from the stream
     emit(state.copyWith(
         status: event.status.copyWith(

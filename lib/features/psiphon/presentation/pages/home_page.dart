@@ -5,7 +5,7 @@ import '../../domain/entities/connection_status.dart' as ps;
 import '../bloc/psiphon_bloc.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class HomePage extends StatelessWidget {
 }
 
 class ConnectionStatusDisplay extends StatelessWidget {
-  const ConnectionStatusDisplay({Key? key}) : super(key: key);
+  const ConnectionStatusDisplay({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +69,7 @@ class ConnectionStatusDisplay extends StatelessWidget {
 }
 
 class ConnectionButton extends StatelessWidget {
-  const ConnectionButton({Key? key}) : super(key: key);
+  const ConnectionButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -80,28 +80,26 @@ class ConnectionButton extends StatelessWidget {
             status.state == ps.ConnectionState.connecting ||
                 status.state == ps.ConnectionState.stopping;
 
-        final bool isConnected = status.state == ps.ConnectionState.connected;
-
-        VoidCallback? onPressed = isConnectingOrStopping
-            ? null
-            : () {
-          if (isConnected) {
-            context.read<PsiphonBloc>().add(StopPsiphonConnection());
-          } else {
-            context.read<PsiphonBloc>().add(StartPsiphonConnection());
-          }
-        };
-
         return ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: isConnected ? Colors.redAccent : Colors.green,
+            backgroundColor: state.serviceIsRunning ? Colors.redAccent : Colors.green,
             padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
           ),
-          onPressed: onPressed,
-          child: isConnectingOrStopping
-              ? const CircularProgressIndicator(color: Colors.white)
-              : Text(
-            isConnected ? 'DISCONNECT' : 'CONNECT',
+          onPressed: () {
+            if (state.serviceIsRunning) {
+              context.read<PsiphonBloc>().add(StopPsiphonConnection());
+            } else {
+              if (isConnectingOrStopping) {
+                context.read<PsiphonBloc>().add(StartPsiphonConnection());
+              } else {
+                context.read<PsiphonBloc>().add(StartPsiphonConnection());
+              }
+            }
+          },
+          child:Text(
+            state.serviceIsRunning==true ?
+            isConnectingOrStopping? 'Cancel': 'Stop':
+            'Start',
             style: const TextStyle(fontSize: 18, color: Colors.white),
           ),
         );
@@ -112,7 +110,7 @@ class ConnectionButton extends StatelessWidget {
 
 
 class RegionSelector extends StatelessWidget {
-  const RegionSelector({Key? key}) : super(key: key);
+  const RegionSelector({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +180,7 @@ class RegionSelector extends StatelessWidget {
 }
 
 class ProxyInfoDisplay extends StatelessWidget {
-  const ProxyInfoDisplay({Key? key}) : super(key: key);
+  const ProxyInfoDisplay({super.key});
 
   @override
   Widget build(BuildContext context) {
