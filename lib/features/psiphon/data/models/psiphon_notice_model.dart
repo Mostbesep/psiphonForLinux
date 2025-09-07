@@ -12,7 +12,6 @@ abstract class PsiphonNotice extends Equatable {
     final data = json['data'] as Map<String, dynamic>? ?? {};
 
     switch (noticeType) {
-    // ... (other cases remain the same) ...
       case 'ListeningHttpProxyPort':
         return ListeningHttpProxyPortNotice.fromData(data);
       case 'ListeningSocksProxyPort':
@@ -25,9 +24,10 @@ abstract class PsiphonNotice extends Equatable {
         return ClientRegionNotice.fromData(data);
       case 'SkipServerEntry':
         return SkipServerEntryNotice.fromData(data);
-    // Add the new case
       case 'ConnectedServerRegion':
         return ConnectedServerRegionNotice.fromData(data);
+      case 'Homepage':
+        return HomepageNotice.fromData(data);
       case 'Exiting':
         return const ExitingNotice();
       default:
@@ -122,6 +122,15 @@ class SkipServerEntryNotice extends PsiphonNotice {
   }
   @override
   List<Object?> get props => [reason];
+}
+
+class HomepageNotice extends PsiphonNotice {
+  final String url;
+  const HomepageNotice({required this.url});
+
+  factory HomepageNotice.fromData(Map<String, dynamic> data) {
+    return HomepageNotice(url: data['url'] as String);
+  }
 }
 
 class ExitingNotice extends PsiphonNotice {

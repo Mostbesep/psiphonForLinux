@@ -1,4 +1,3 @@
-// lib/features/psiphon/presentation/bloc/psiphon_bloc.dart
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -43,7 +42,6 @@ class PsiphonBloc extends Bloc<PsiphonEvent, PsiphonState> {
   Future<void> _onInitialize(
       PsiphonBlocInitialized event, Emitter<PsiphonState> emit) async {
     // Read initial region from config and emit the state.
-    // This is now a valid use of 'emit'.
     final initialRegion = await configService.readEgressRegion(psiphonPaths.configPath);
     if (initialRegion != null) {
       emit(state.copyWith(status: state.status.copyWith(selectedEgressRegion: initialRegion)));

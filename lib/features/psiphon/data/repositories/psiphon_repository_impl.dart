@@ -1,5 +1,5 @@
-// lib/features/psiphon/data/repositories/psiphon_repository_impl.dart
 import 'dart:async';
+import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 import '../../../../core/errors/failures.dart';
@@ -72,6 +72,10 @@ class PsiphonRepositoryImpl implements PsiphonRepository {
     }
   }
 
+  void _openHomePage(String url) async {
+    Process.run("xdg-open", [url]);
+  }
+
   /// This is the core logic that translates raw notices into meaningful state.
   ConnectionStatus _mapNoticeToStatus(
       PsiphonNotice notice, ConnectionStatus lastStatus) {
@@ -108,6 +112,9 @@ class PsiphonRepositoryImpl implements PsiphonRepository {
         state: ConnectionState.error,
         errorMessage: 'Connection failed: ${notice.reason}',
       );
+    }
+    if (notice is HomepageNotice) {
+      _openHomePage(notice.url);
     }
     if (notice is ExitingNotice) {
       // Reset to a clean disconnected state
