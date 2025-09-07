@@ -5,6 +5,7 @@ import 'features/psiphon/data/datasources/psiphon_local_datasource.dart';
 import 'features/psiphon/data/repositories/psiphon_repository_impl.dart';
 import 'features/psiphon/domain/repositories/psiphon_repository.dart';
 import 'features/psiphon/domain/usecases/get_status_stream.dart';
+import 'features/psiphon/domain/usecases/open_webpage.dart';
 import 'features/psiphon/domain/usecases/start_psiphon.dart';
 import 'features/psiphon/domain/usecases/stop_psiphon.dart';
 import 'features/psiphon/presentation/bloc/psiphon_bloc.dart';
@@ -23,6 +24,7 @@ Future<void> init(PsiphonPaths paths) async {
       startPsiphon: sl(),
       stopPsiphon: sl(),
       getStatusStream: sl(),
+      openWebpage: sl(),
       psiphonPaths: sl(),
       configService: sl(),
     ),
@@ -33,6 +35,7 @@ Future<void> init(PsiphonPaths paths) async {
   sl.registerLazySingleton(() => StartPsiphon(sl()));
   sl.registerLazySingleton(() => StopPsiphon(sl()));
   sl.registerLazySingleton(() => GetStatusStream(sl()));
+  sl.registerLazySingleton(() => OpenWebpage(sl()));
 
   // Repository
   sl.registerLazySingleton<PsiphonRepository>(

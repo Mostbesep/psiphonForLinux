@@ -35,3 +35,9 @@ class _PsiphonStatusUpdated extends PsiphonEvent {
   @override
   List<Object> get props => [status];
 }
+
+/// Event open Psiphon Website
+class OpenWebsite extends PsiphonEvent {
+  final String url;
+  const OpenWebsite(this.url);
+}

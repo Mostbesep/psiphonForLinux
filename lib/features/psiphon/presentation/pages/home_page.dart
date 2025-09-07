@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../injection_container.dart';
 import '../../domain/entities/connection_status.dart' as ps;
 import '../bloc/psiphon_bloc.dart';
@@ -13,23 +14,103 @@ class HomePage extends StatelessWidget {
       create: (_) => sl<PsiphonBloc>(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Psiphon Flutter Client'),
+          title: const Text('Psiphon'),
+          leading: IconButton(
+            tooltip: 'Open Official website',
+              onPressed: () {
+                sl<PsiphonBloc>().add(OpenWebsite("https://psiphon.ca/"));
+              }, icon: Image.asset('assets/logo/psiphonlogo.png')),
+          actions: [
+            IconButton(
+              onPressed: () {
+                showAboutDialog(
+                    context: context,
+                  applicationIcon: Image.asset('assets/logo/psiphonlogo.png', width: 32, height: 32,),
+                  children: [
+                    Text('Unofficial psiphon gui application for linux users',
+                        style: TextStyle(color: Colors.white, fontSize: 18)),
+                    SizedBox(height: 8,),
+                    Text('Psiphon is a free VPN service that allows you to bypass internet censorship and access blocked websites.',),
+                    SizedBox(height: 8,),
+                    TextButton(
+                        onPressed: () {
+                          sl<PsiphonBloc>().add(OpenWebsite("https://psiphon.ca/"));
+                        },
+                        child: Text("Psiphon official website"),),
+                    Divider(),
+                    Text('This project is not developed by Psiphon and is an open source project. You can view the source code on GitHub.', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    SizedBox(height: 8,),
+                    Text('try to help improve the project by contributing to it. You can view the issues and pull requests on GitHub.', style: TextStyle(color: Colors.white, fontSize: 14)),
+                    SizedBox(height: 8,),
+                    TextButton(
+                        onPressed: () {
+                          sl<PsiphonBloc>().add(OpenWebsite("https://github.com/Mostbesep/psiphonForLinux"));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Text("View source code on GitHub"),
+                              SvgPicture.asset('assets/svg/github_icon.svg' , width: 35, height: 35,),
+                            ],
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          ),
+                        ),
+                    ),
+                  ],
+                  applicationLegalese: '''
+MIT License
+
+Copyright (c) 2025 mostbesep
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+                            ''',
+                );
+              },
+              icon: Icon(
+                  Icons.info
+              ),
+            )
+          ],
         ),
-        body: const Center(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ConnectionStatusDisplay(),
-                SizedBox(height: 24),
-                ConnectionButton(),
-                SizedBox(height: 24),
-                RegionSelector(),
-                SizedBox(height: 16),
-                ProxyInfoDisplay(),
-              ],
-            ),
+        body: Container(
+          child: Stack(
+            children: [
+              SvgPicture.asset('assets/svg/header_desktop.svg', fit: BoxFit.cover,),
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ConnectionStatusDisplay(),
+                      SizedBox(height: 24),
+                      ConnectionButton(),
+                      SizedBox(height: 24),
+                      RegionSelector(),
+                      SizedBox(height: 16),
+                      ProxyInfoDisplay(),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

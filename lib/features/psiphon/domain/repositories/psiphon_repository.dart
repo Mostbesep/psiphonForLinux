@@ -18,4 +18,6 @@ abstract class PsiphonRepository {
   /// Provides a stream of [ConnectionStatus] updates.
   /// The UI will listen to this stream to reflect the current state.
   Stream<ConnectionStatus> getStatusStream();
+
+  Future<Either<Failure, void>> openPsiphonWebsite(String url);
 }

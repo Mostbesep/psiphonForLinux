@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'core/utils/desktop_window.dart';
 import 'features/psiphon/presentation/pages/splash_screen.dart';
 
-void main() {
+void main() async {
   // Ensure Flutter binding is initialized, as setup might run before runApp.
   WidgetsFlutterBinding.ensureInitialized();
+
+
+  // desktop window setup
+  await setupDesktopWindowSettings();
+
 
   // Directly run the app. The SplashScreen will handle the setup process.
   runApp(const MyApp());
@@ -15,7 +21,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Psiphon Flutter',
+      debugShowCheckedModeBanner: false,
+      title: 'Psiphon',
       theme: ThemeData.dark(),
       // Start the app with the SplashScreen
       home: const SplashScreen(),

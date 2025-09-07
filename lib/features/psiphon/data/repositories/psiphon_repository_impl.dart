@@ -72,7 +72,13 @@ class PsiphonRepositoryImpl implements PsiphonRepository {
     }
   }
 
-  void _openHomePage(String url) async {
+  @override
+  Future<Either<Failure, void>> openPsiphonWebsite(String url) async {
+    _openWebPage(url);
+    return const Right(null);
+  }
+
+  void _openWebPage(String url) async {
     Process.run("xdg-open", [url]);
   }
 
@@ -114,7 +120,7 @@ class PsiphonRepositoryImpl implements PsiphonRepository {
       );
     }
     if (notice is HomepageNotice) {
-      _openHomePage(notice.url);
+      _openWebPage(notice.url);
     }
     if (notice is ExitingNotice) {
       // Reset to a clean disconnected state
@@ -134,4 +140,6 @@ class PsiphonRepositoryImpl implements PsiphonRepository {
     _noticeSubscription?.cancel();
     _statusStreamController.close();
   }
+
+
 }

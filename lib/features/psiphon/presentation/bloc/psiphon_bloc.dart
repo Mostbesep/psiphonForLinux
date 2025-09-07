@@ -6,6 +6,7 @@ import '../../../../core/services/psiphon_setup_service.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../../domain/entities/connection_status.dart';
 import '../../domain/usecases/get_status_stream.dart';
+import '../../domain/usecases/open_webpage.dart';
 import '../../domain/usecases/start_psiphon.dart';
 import '../../domain/usecases/stop_psiphon.dart';
 
@@ -16,6 +17,7 @@ class PsiphonBloc extends Bloc<PsiphonEvent, PsiphonState> {
   final StartPsiphon startPsiphon;
   final StopPsiphon stopPsiphon;
   final GetStatusStream getStatusStream;
+  final OpenWebpage openWebpage;
   final PsiphonPaths psiphonPaths;
   final PsiphonConfigService configService;
 
@@ -25,6 +27,7 @@ class PsiphonBloc extends Bloc<PsiphonEvent, PsiphonState> {
     required this.startPsiphon,
     required this.stopPsiphon,
     required this.getStatusStream,
+    required this.openWebpage,
     required this.psiphonPaths,
     required this.configService,
   }) : super(const PsiphonState()) {
@@ -32,6 +35,7 @@ class PsiphonBloc extends Bloc<PsiphonEvent, PsiphonState> {
     on<StartPsiphonConnection>(_onStartConnection);
     on<StopPsiphonConnection>(_onStopConnection);
     on<SelectRegion>(_onSelectRegion);
+    on<OpenWebsite>(_openWebsite);
     on<_PsiphonStatusUpdated>(_onStatusUpdated);
 
 
@@ -65,8 +69,7 @@ class PsiphonBloc extends Bloc<PsiphonEvent, PsiphonState> {
     await stopPsiphon(NoParams());
   }
 
-  Future<void> _onSelectRegion(
-      SelectRegion event, Emitter<PsiphonState> emit) async {
+  Future<void> _onSelectRegion(SelectRegion event, Emitter<PsiphonState> emit) async {
     // 1. Stop the current connection if it's running
     if (state.status.state != ConnectionState.disconnected &&
         state.status.state != ConnectionState.stopping) {
@@ -83,6 +86,11 @@ class PsiphonBloc extends Bloc<PsiphonEvent, PsiphonState> {
 
     // 4. Automatically reconnect
     add(StartPsiphonConnection());
+  }
+
+  Future<void> _openWebsite(OpenWebsite event, Emitter<PsiphonState> emit) async {
+    // Open the official Psiphon website in a web browser.
+    await openWebpage(event.url);
   }
 
   void _onStatusUpdated(_PsiphonStatusUpdated event, Emitter<PsiphonState> emit) {
