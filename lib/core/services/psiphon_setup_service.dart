@@ -35,8 +35,12 @@ class PsiphonSetupService {
     try {
 
       final dir = await getApplicationDocumentsDirectory();
-      final String binaryPath = '${dir.path}/psiphon-tunnel-core-x86_64';
-      final String configPath = '${dir.path}/psiphon.config';
+      final String binaryPath = '${dir.path}/psiphon/psiphon-tunnel-core-x86_64';
+      final String configPath = '${dir.path}/psiphon/psiphon.config';
+
+      if (!Directory('${dir.path}/psiphon').existsSync()) {
+        Directory('${dir.path}/psiphon').createSync();
+      }
 
       final binaryFile = File(binaryPath);
       final configFile = File(configPath);
