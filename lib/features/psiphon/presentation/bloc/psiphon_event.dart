@@ -36,7 +36,7 @@ class _PsiphonStatusUpdated extends PsiphonEvent {
   List<Object> get props => [status];
 }
 
-/// Event open Psiphon Website
+/// an Event to open some Website
 class OpenWebsite extends PsiphonEvent {
   final String url;
   const OpenWebsite(this.url);

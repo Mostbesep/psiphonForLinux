@@ -49,16 +49,19 @@ class HomePage extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text("View source code on GitHub"),
                               SvgPicture.asset('assets/svg/github_icon.svg' , width: 35, height: 35,),
                             ],
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           ),
                         ),
                     ),
-                  ],
-                  applicationLegalese: '''
+                    Text('Made with ❤️ by mostbesep', style: TextStyle(color: Colors.white, fontSize: 14)),
+                    Divider(),
+                    Text('License', style: TextStyle(color: Colors.white, fontSize: 22)),
+                    SizedBox(height: 8,),
+                    Text(                  '''
 MIT License
 
 Copyright (c) 2025 mostbesep
@@ -80,7 +83,8 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-                            ''',
+'''),
+                  ],
                 );
               },
               icon: Icon(
