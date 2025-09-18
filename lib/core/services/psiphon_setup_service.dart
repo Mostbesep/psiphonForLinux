@@ -4,10 +4,11 @@ import 'package:path_provider/path_provider.dart';
 
 
 class PsiphonPaths {
+  final String appDocsDirectory;
   final String binaryPath;
   final String configPath;
 
-  PsiphonPaths({required this.binaryPath, required this.configPath});
+  PsiphonPaths({required this.binaryPath, required this.configPath, required this.appDocsDirectory});
 }
 
 class PsiphonSetupService {
@@ -70,10 +71,9 @@ class PsiphonSetupService {
         print('config file already exists');
       }
 
-      return PsiphonPaths(binaryPath: binaryPath, configPath: configPath);
+      return PsiphonPaths(binaryPath: binaryPath, configPath: configPath, appDocsDirectory: '${dir.path}/psiphon');
     } catch (e) {
       print('Error while setting up Psiphon: $e');
-      // در یک برنامه واقعی باید این خطا رو بهتر مدیریت کنید
       rethrow;
     }
   }

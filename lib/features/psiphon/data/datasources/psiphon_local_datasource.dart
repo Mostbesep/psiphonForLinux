@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import '../../../../core/services/psiphon_setup_service.dart';
 import '../models/psiphon_notice_model.dart';
 
@@ -36,6 +37,7 @@ class PsiphonLocalDataSourceImpl implements PsiphonLocalDataSource {
       _process = await Process.start(
         paths.binaryPath,
         ['-config', paths.configPath],
+        workingDirectory: paths.appDocsDirectory,
       );
 
       // --- THE FIX: Listen to stderr instead of stdout ---
