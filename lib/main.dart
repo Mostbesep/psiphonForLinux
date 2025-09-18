@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'core/utils/desktop_window.dart';
 import 'features/psiphon/presentation/pages/splash_screen.dart';
 
 void main() async {
@@ -7,8 +6,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
 
-  // desktop window setup
-  await setupDesktopWindowSettings();
+
 
 
   // Directly run the app. The SplashScreen will handle the setup process.
