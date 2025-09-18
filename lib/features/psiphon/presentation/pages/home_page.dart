@@ -93,29 +93,27 @@ SOFTWARE.
             )
           ],
         ),
-        body: Container(
-          child: Stack(
-            children: [
-              SvgPicture.asset('assets/svg/header_desktop.svg', fit: BoxFit.cover,),
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ConnectionStatusDisplay(),
-                      SizedBox(height: 24),
-                      ConnectionButton(),
-                      SizedBox(height: 24),
-                      RegionSelector(),
-                      SizedBox(height: 16),
-                      ProxyInfoDisplay(),
-                    ],
-                  ),
+        body: Stack(
+          children: [
+            SvgPicture.asset('assets/svg/header_desktop.svg',fit: BoxFit.cover, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height),
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ConnectionStatusDisplay(),
+                    SizedBox(height: 24),
+                    ConnectionButton(),
+                    SizedBox(height: 24),
+                    RegionSelector(),
+                    SizedBox(height: 16),
+                    ProxyInfoDisplay(),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
